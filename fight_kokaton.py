@@ -153,9 +153,6 @@ class Beam:
         self._rct.left = bird. _rct.right #こうかトンの中心座標＋右
         self._rct.centery = bird. _rct.centery
         self._vx, self._vy = +1, 0
-        if event.type == pg.KEYDOWN and event.key == pg.K_x:
-            self._vx = +3
-
 
     def update(self, screen: pg.Surface):
         self._rct.move_ip(self._vx, self._vy) #move_ipで１だけ右
