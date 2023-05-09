@@ -8,7 +8,8 @@ import pygame as pg
 
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
-NUM_OF_BOMBS = 5
+NUM_OF_BOMBS = 5 #爆弾の数
+Beam_EN = 100 #こうかとんの残ビーム数
 
 
 def check_bound(area: pg.Rect, obj: pg.Rect) -> tuple[bool, bool]:
@@ -152,23 +153,13 @@ class Beam:
         self._rct.left = bird. _rct.right #こうかトンの中心座標＋右
         self._rct.centery = bird. _rct.centery
         self._vx, self._vy = +1, 0
+        if event.type == pg.KEYDOWN and event.key == pg.K_x:
+            self._vx = +3
 
 
     def update(self, screen: pg.Surface):
         self._rct.move_ip(self._vx, self._vy) #move_ipで１だけ右
         screen.blit(self._img, self._rct)
-
-class Score():
-    def __init__(self):
-        self.point = 0
-
-        def cal_score(self, point):
-            self.point += point * 100
-
-        def draw(self, surface):
-            text = self.font.render("{:04d}".format(self.point), True, (63,255,63))
-            surface.blit(text, [10, 5])
-
 
 
 def main():
@@ -190,6 +181,11 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beam = Beam(bird)
+            if event.type == pg.KEYDOWN and event.key == pg.K_x: #xを押したら５秒間停止する。
+                text3 = font1.render("stopped", True, (255,64,64))
+                screen.blit(text3, (500,500))
+                pg.display.update()
+                time.sleep(5)
 
         tmr += 1
         screen.blit(bg_img, [0, 0])
