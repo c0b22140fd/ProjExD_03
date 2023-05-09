@@ -143,7 +143,7 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return 0
-            if event.type == pg.KEYDOWN and event.type == pg.K_SPACE:
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beam = Beam(bird)
 
         tmr += 1
@@ -159,11 +159,13 @@ def main():
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         bomb.update(screen)
+
         if beam is not None:
             beam.update(screen)
-            if bomb.check_collide(beam):
+            if bomb is not None and beam._rct.colliderect(bomb._rct):
                 beam = None
-                bomb = None
+                beam = None
+                bird.change_img(6,screen)
         pg.display.update()
         clock.tick(1000)
 
