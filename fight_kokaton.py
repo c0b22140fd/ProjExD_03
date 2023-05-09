@@ -1,6 +1,7 @@
 import random
 import sys
 import time
+import pygame
 
 import pygame as pg
 
@@ -157,6 +158,18 @@ class Beam:
         self._rct.move_ip(self._vx, self._vy) #move_ipで１だけ右
         screen.blit(self._img, self._rct)
 
+class Score():
+    def __init__(self):
+        self.point = 0
+
+        def cal_score(self, point):
+            self.point += point * 100
+
+        def draw(self, surface):
+            text = self.font.render("{:04d}".format(self.point), True, (63,255,63))
+            surface.blit(text, [10, 5])
+
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -167,8 +180,10 @@ def main():
     bird = Bird(3, (900, 400)) #3がnum 
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam = None
-
+    font1 = pygame.font.SysFont(None, 50)
     tmr = 0
+    score = 0
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -184,10 +199,15 @@ def main():
             if bird._rct.colliderect(bomb._rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
                 bird.change_img(8, screen)
+                text1 = font1.render("GAME OVER", True, (255,64,64))
+                screen.blit(text1, (500,500))
+                screen.blit(text2, (50,50))
                 pg.display.update()
                 time.sleep(1)
                 return
-
+            
+        text2 = font1.render(str(score), True, (255,64,64))
+        screen.blit(text2, (50,50))
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         bomb.update(screen)
@@ -196,6 +216,7 @@ def main():
             beam.update(screen)
             for i, bomb in enumerate(bombs):
                 if beam._rct.colliderect(bomb._rct):
+                    score += 1
                     beam = None
                     del bombs[i]
                     bird.change_img(6, screen)
