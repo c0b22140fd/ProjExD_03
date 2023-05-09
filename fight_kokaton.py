@@ -52,7 +52,7 @@ class Bird:
         self._rct = self._img.get_rect()
         self._rct.center = xy
 
-    def change_img(self, num: int, screen: pg.Surface):
+    def change_img(self, num: int, screen: pg.Surface): #numがこうかとんの画像番号
         """
         こうかとん画像を切り替え，画面に転送する
         引数1 num：こうかとん画像ファイル名の番号
@@ -75,6 +75,9 @@ class Bird:
                 if key_lst[k]:
                     self._rct.move_ip(-mv[0], -mv[1])
         screen.blit(self._img, self._rct)
+
+    def get_rct(self) -> pg.Rect:
+        return self._rct
 
 
 class Bomb:
@@ -107,6 +110,23 @@ class Bomb:
         self._rct.move_ip(self._vx, self._vy)
         screen.blit(self._img, self._rct)
 
+    def get_rct(self) -> pg.Rect:
+        return self._rct
+
+
+class Beam:
+    def __init__(self, bird : Bird):
+        self._img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/beam.png"), 0, 2.0) 
+        self._rct = self._img.get_rect()
+        self._rct.left = bird. _rct.right #こうかトンの中心座標＋右
+        self._rct.centery = bird. _rct.centery
+        self._vx, self._vy = +1, 0
+
+
+    def update(self, screen: pg.Surface):
+        self._rct.move_ip(self._vx, self._vy) #move_ipで１だけ右
+        screen.blit(self._img, self._rct)
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -114,14 +134,18 @@ def main():
     clock = pg.time.Clock()
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
 
-    bird = Bird(3, (900, 400))
+    bird = Bird(3, (900, 400)) #3がnum 
     bomb = Bomb((255, 0, 0), 10)
+    beam = None
 
     tmr = 0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                return
+                return 0
+            if event.type == pg.KEYDOWN and event.type == pg.K_SPACE:
+                beam = Beam(bird)
+
         tmr += 1
         screen.blit(bg_img, [0, 0])
         
@@ -135,6 +159,11 @@ def main():
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         bomb.update(screen)
+        if beam is not None:
+            beam.update(screen)
+            if bomb.check_collide(beam):
+                beam = None
+                bomb = None
         pg.display.update()
         clock.tick(1000)
 
